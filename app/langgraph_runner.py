@@ -1,3 +1,5 @@
+# app/langgraph_runner.py
+
 import os
 from dotenv import load_dotenv
 from langchain_community.chat_models import ChatOpenAI
@@ -13,10 +15,12 @@ prompt_template = PromptTemplate.from_template(prompt_template_str)
 
 llm = ChatOpenAI(model="gpt-4", temperature=0.7)
 
-def run_dm_graph(user_input: str, history: str = ""):
-    prompt = prompt_template.format(history=history, input=user_input)
+def run_dm_graph(user_input: str, history: str = "", context: dict = None):
+    context = context or {}
+    context_str = context.get("context_text", "")
+    prompt = prompt_template.format(history=history, input=user_input, context=context_str)
     response = llm.invoke(prompt)
-    
+
     updated_history = f"{history}\nPlayer: {user_input}\nDM: {response.content}"
 
     return {
